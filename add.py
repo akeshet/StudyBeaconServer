@@ -42,9 +42,9 @@ course = params.getvalue(COURSE_STR)
 # TODO: Any way to validate the course?
 
 # Do the following for Lat, Lon, and DeviceId
-def longCheck(key):
+def longCheck(key, base=10):
     try:
-        return long(params.getvalue(key))
+        return long(params.getvalue(key),base)
     except ValueError, e:
         print STATUS_400_STR
         print
@@ -54,7 +54,7 @@ def longCheck(key):
 # Get the Lat, Lon, and DeviceId
 LatE6 = longCheck(LAT_STR)
 LonE6 = longCheck(LON_STR)
-DeviceId = longCheck(DEV_ID_STR)
+DeviceId = longCheck(DEV_ID_STR, base=16)
 
 # Validate the Lat, Lon, and DeviceId
 LatE6Min = -80000000L
