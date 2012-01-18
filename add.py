@@ -6,9 +6,11 @@ import datetime
 import cgi
 # DEBUG No need to import cgitb when done debugging
 import cgitb
+import json as j
 import sys
 
 import sqlGlobals as g
+import JSONDateTimeEncoder as jsondte
 
 con = None
 
@@ -136,15 +138,31 @@ try:
 
     # Ok, can proceed.
     # Can this fail??
-    nInsert = cur.execute("INSERT INTO beacons (LatE6, LonE6, Course, Details, Contact, Created, Expires) " +
+    nInsert = cur.execute("INSERT INTO beacons (LatE6, LonE6, Course, " +
+                          "Details, Contact, Created, Expires) " +
                           "VALUES (%s, %s, %s, %s, %s, now(), %s); " +
                           "INSERT INTO devices (DeviceId, BeaconId, Joined) " +
-                          "VALUES (%s, LAST_INSERT_ID(), now());",
+                          "VALUES (%s, LAST_INSERT_ID(), now()); " +
+                          "SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,Details,Contact," +
+                          "Created,Expires,count(DeviceId) AS count " +
+                          "FROM devices d INNER JOIN beacons b " +
+                          "ON b.BeaconId=d.BeaconId " +
+                          "WHERE b.BeaconId=LAST_INSERT_ID() " +
+                          "GROUP BY b.BeaconId LIMIT 1;",
                           (LatE6, LonE6, course, Details, Contact, expiresStr, DeviceId))
     
+    # Fast forward past the two insert statements
+    cur.nextset()
+    cur.nextset()
+
+    createdRow = cur.fetchone()
+
     # Success??
-    print "Status: 200 OK"
-    print 
+    print "Content-Type: application/json"
+    print
+
+    # JSON it out (see the JSONDateTimeEncoder.py)
+    print j.dumps(createdRow,cls=jsondte.JSONDateTimeEncoder)
     
 except mdb.Error, e:
 
