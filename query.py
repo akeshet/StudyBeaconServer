@@ -23,7 +23,7 @@ params = cgi.FieldStorage()
 
 # Get the courses requests
 COURSE_STR = "course"
-courses = params.getlist(COURSE_STR);
+courses = params.getlist(COURSE_STR)
 
 # The string for the course query
 if len(courses) > 0:
@@ -53,14 +53,15 @@ LonE6Max = valOr0(LON_MAX_STR)
 LatLonString = "LatE6 > %s AND LatE6 < %s AND LonE6 > %s AND LonE6 < %s"
 
 # Here is the prepared query
-queryPrep = "SELECT LatE6,LonE6,Course,Details,Contact,Created,Expires,count(DeviceId) AS count FROM devices d INNER JOIN beacons b ON b.BeaconId=d.BeaconId WHERE (%s) AND (%s) GROUP BY b.BeaconId;" % (coursesOrString, LatLonString)
+queryPrep = ("SELECT LatE6,LonE6,Course,Details,Contact,Created,Expires,count(DeviceId)" 
+             + " AS count FROM devices d INNER JOIN beacons b ON b.BeaconId=d.BeaconId "
+             + "WHERE (%s) AND (%s) GROUP BY b.BeaconId;" % (coursesOrString, LatLonString))
 
 
 # Put this in a try block because connecting to the server might fail
 try:
 
-    con = mdb.connect(g.server, g.username, 
-        g.password, g.dbname);
+    con = mdb.connect(g.server, g.username, g.password, g.dbname);
 
     cur = con.cursor(cursorclass=mdb.cursors.DictCursor)
 
@@ -82,7 +83,6 @@ except mdb.Error, e:
     print "Status: 502 Bad Gateway"
     print
 
-    # TODO This is not JSON -- return an error code instead?
     print "Error %d: %s" % (e.args[0],e.args[1])
     sys.exit(1)
     
