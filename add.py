@@ -24,7 +24,7 @@ STATUS_400_STR = "Status: 400 Bad Request"
 params = cgi.FieldStorage()
 
 # Check that we have all the required inputs we need
-COURSE_STR = "course"
+COURSE_STR = "Course"
 LAT_STR = "LatE6"
 LON_STR = "LonE6"
 DEV_ID_STR = "DeviceId"
@@ -125,7 +125,7 @@ try:
     cur = con.cursor(cursorclass=mdb.cursors.DictCursor)
 
     # Check if this DeviceId is already at an existing beacon
-    cur.execute("SELECT count(1) AS count FROM devices WHERE DeviceId=%s", (DeviceId))
+    cur.execute("SELECT count(1) AS Count FROM devices WHERE DeviceId=%s", (DeviceId))
     row = cur.fetchone()
     # Shouldn't be anything else but just in case ...
     cur.nextset()
@@ -144,7 +144,7 @@ try:
                           "INSERT INTO devices (DeviceId, BeaconId, Joined) " +
                           "VALUES (%s, LAST_INSERT_ID(), now()); " +
                           "SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,Details,Contact," +
-                          "Created,Expires,count(DeviceId) AS count " +
+                          "Created,Expires,count(DeviceId) AS Count " +
                           "FROM devices d INNER JOIN beacons b " +
                           "ON b.BeaconId=d.BeaconId " +
                           "WHERE b.BeaconId=LAST_INSERT_ID() " +

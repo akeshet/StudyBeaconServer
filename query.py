@@ -22,7 +22,7 @@ params = cgi.FieldStorage()
 # Construct the query
 
 # Get the courses requests
-COURSE_STR = "course"
+COURSE_STR = "Course"
 courses = params.getlist(COURSE_STR)
 
 # The string for the course query
@@ -54,7 +54,7 @@ LatLonString = "LatE6 > %s AND LatE6 < %s AND LonE6 > %s AND LonE6 < %s"
 
 # Here is the prepared query
 queryPrep = ("SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,Details,Contact,Created,Expires,count(DeviceId)" 
-             + " AS count FROM devices d INNER JOIN beacons b ON b.BeaconId=d.BeaconId "
+             + " AS Count FROM devices d INNER JOIN beacons b ON b.BeaconId=d.BeaconId "
              + "WHERE (%s) AND (%s) GROUP BY b.BeaconId;" % (coursesOrString, LatLonString))
 
 
