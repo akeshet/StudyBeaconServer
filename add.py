@@ -102,13 +102,21 @@ else:
     DETAILS_DEFAULT = ""
     Details = DETAILS_DEFAULT
 
-# PARAM Contact
-CONTACT_STR = 'Contact'
-if CONTACT_STR in params:
-    Contact = params.getvalue(CONTACT_STR)
+# PARAM Telephone
+TELEPHONE_STR = 'Telephone'
+if TELEPHONE_STR in params:
+    Telephone = params.getvalue(TELEPHONE_STR)
 else:
-    CONTACT_DEFAULT = ""
-    Contact = CONTACT_DEFAULT
+    TELEPHONE_DEFAULT = ""
+    Telephone = TELEPHONE_DEFAULT
+
+# PARAM Email
+EMAIL_STR = 'Email'
+if EMAIL_STR in params:
+    Email = params.getvalue(EMAIL_STR)
+else:
+    EMAIL_DEFAULT = ""
+    Email = EMAIL_DEFAULT
 
 # Created
 SQL_DATE_FMT_STR = '%Y-%m-%d %H:%M:%S'
@@ -139,17 +147,17 @@ try:
     # Ok, can proceed.
     # Can this fail??
     nInsert = cur.execute("INSERT INTO beacons (LatE6, LonE6, Course, " +
-                          "Details, Contact, Created, Expires) " +
-                          "VALUES (%s, %s, %s, %s, %s, now(), %s); " +
+                          "Details, Telephone, Email, Created, Expires) " +
+                          "VALUES (%s, %s, %s, %s, %s, %s, now(), %s); " +
                           "INSERT INTO devices (DeviceId, BeaconId, Joined) " +
                           "VALUES (%s, LAST_INSERT_ID(), now()); " +
-                          "SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,Details,Contact," +
+                          "SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Telephone,Email,Details,Contact," +
                           "Created,Expires,count(DeviceId) AS Count " +
                           "FROM devices d INNER JOIN beacons b " +
                           "ON b.BeaconId=d.BeaconId " +
                           "WHERE b.BeaconId=LAST_INSERT_ID() " +
                           "GROUP BY b.BeaconId LIMIT 1;",
-                          (LatE6, LonE6, course, Details, Contact, expiresStr, DeviceId))
+                          (LatE6, LonE6, course, Details, Telephone, Email, expiresStr, DeviceId))
     
     # Fast forward past the two insert statements
     cur.nextset()
@@ -175,63 +183,3 @@ finally:
 
     if con:
         con.close()
-
-# # Do the following for Lat/Lon
-# def valOr0(key):
-#     if key in params:
-#         return params.getvalue(key)
-#     else:
-#         return 0L
-    
-# # Get the lat/long limiting information   
-# LAT_MIN_STR = "LatE6Min"
-# LAT_MAX_STR = "LatE6Max"
-# LON_MIN_STR = "LonE6Min"
-# LON_MAX_STR = "LonE6Max"
-
-# LatE6Min = valOr0(LAT_MIN_STR)
-# LatE6Max = valOr0(LAT_MAX_STR)
-# LonE6Min = valOr0(LON_MIN_STR)
-# LonE6Max = valOr0(LON_MAX_STR)
-
-# # The string for the lat/lon query
-# LatLonString = "LatE6 > %s AND LatE6 < %s AND LonE6 > %s AND LonE6 < %s"
-
-# # Here is the prepared query
-# queryPrep = ("SELECT LatE6,LonE6,Course,Details,Contact,Created,Expires,count(DeviceId)" 
-#              + " AS count FROM devices d INNER JOIN beacons b ON b.BeaconId=d.BeaconId "
-#              + "WHERE (%s) AND (%s) GROUP BY b.BeaconId;" % (coursesOrString, LatLonString))
-
-
-# # Put this in a try block because connecting to the server might fail
-# try:
-
-#     con = mdb.connect(g.server, g.username, g.password, g.dbname);
-
-#     cur = con.cursor(cursorclass=mdb.cursors.DictCursor)
-
-#     cur.execute(queryPrep, tuple(courses)+(LatE6Min,LatE6Max,LonE6Min,LonE6Max))
-#     rows = cur.fetchall()
-
-#     # If we've made it this far, then everything is kosher! Print the results
-#     # HTTP Header
-#     # TODO Encoding?
-#     print "Content-Type: application/json"
-#     print
-    
-#     # JSON it out (see the JSONDateTimeEncoder.py)
-#     print j.dumps(rows,cls=jsondte.JSONDateTimeEncoder)
-    
-# except mdb.Error, e:
-  
-#     # This would be in error
-#     print "Status: 502 Bad Gateway"
-#     print
-
-#     print "Error %d: %s" % (e.args[0],e.args[1])
-#     sys.exit(1)
-    
-# finally:    
-        
-#     if con:    
-#         con.close()
