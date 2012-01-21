@@ -23,7 +23,11 @@ params = cgi.FieldStorage()
 
 # Get the courses requests
 COURSE_STR = "Course"
-courses = params.getlist(COURSE_STR)
+COURSE_DELIM = ":"
+courses = []
+courseList = params.getlist(COURSE_STR)
+for courseEntry in courseList:
+    courses.extend( courseEntry.split(COURSE_DELIM) )
 
 # The string for the course query
 if len(courses) > 0:
@@ -76,7 +80,7 @@ try:
     
     # JSON it out (see the JSONDateTimeEncoder.py)
     print j.dumps(rows,cls=jsondte.JSONDateTimeEncoder)
-    
+
 except mdb.Error, e:
   
     # This would be in error
