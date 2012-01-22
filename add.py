@@ -12,6 +12,11 @@ import sys
 import sqlGlobals as g
 import JSONDateTimeEncoder as jsondte
 
+#f= open("./debugLog","a")
+
+def debuglog(message):
+#    f.write("%s %s\n" % (datetime.datetime.now().isoformat(), message) )
+
 con = None
 
 # DEBUG Turn this off when done debugging
@@ -37,6 +42,7 @@ if (COURSE_STR not in params or
     print
     print ("Must include " + COURSE_STR + ", " + LAT_STR + ", " +
            LON_STR + ", " + DEV_ID_STR )
+    debuglog("Bad input params")
     sys.exit(1)
 
 # Ok, get the parameters
@@ -51,6 +57,7 @@ def longCheck(key, base=10):
         print STATUS_400_STR
         print
         print key + " should be an integer"
+        debuglog("%s not an integer" % (key))
         sys.exit(1)
 
 # Get the Lat, Lon, and DeviceId
@@ -69,12 +76,14 @@ if (LatE6 < LatE6Min or LatE6 > LatE6Max or
     print STATUS_400_STR
     print 
     print "Latitude/Longitude out of bounds"
+    debuglog("Lat/Lon bounds")
     sys.exit(1)
 
 if (DeviceId < 0):
     print STATUS_400_STR
     print
     print "Invalid DeviceId"
+    debuglog("Bad deviceId")
     sys.exit(1)
 
 # The rest of the params are optional
@@ -92,6 +101,7 @@ if (duration < 0 or duration > DURATION_MAX):
     print STATUS_400_STR
     print
     print DURATION_STR + "must be positive and less than %s" % (DURATION_MAX)
+    debuglog("Bad duration")
     sys.exit(1)
 
 # PARAM Details
@@ -133,37 +143,47 @@ try:
     cur = con.cursor(cursorclass=mdb.cursors.DictCursor)
 
     # Check if this DeviceId is already at an existing beacon
-    cur.execute("SELECT count(1) AS Count FROM devices WHERE DeviceId=%s", (DeviceId))
+    COUNT_STR = 'Count'
+    cur.execute("SELECT count(1) AS " + COUNT_STR + " FROM devices WHERE DeviceId=%s", (str(DeviceId),))
     row = cur.fetchone()
     # Shouldn't be anything else but just in case ...
     cur.nextset()
 
-    if row['count']>0:
+    debuglog("Found %d entries in devices with deviceid %s" % (row[COUNT_STR],str(DeviceId)))
+
+    if row[COUNT_STR]>0:
         print STATUS_400_STR
         print
         print "Already at a beacon"
+        debuglog("Already at a beacon")
         sys.exit(1)
 
     # Ok, can proceed.
     # Can this fail??
-    nInsert = cur.execute("INSERT INTO beacons (LatE6, LonE6, Course, " +
-                          "Details, Telephone, Email, Created, Expires) " +
-                          "VALUES (%s, %s, %s, %s, %s, %s, now(), %s); " +
-                          "INSERT INTO devices (DeviceId, BeaconId, Joined) " +
-                          "VALUES (%s, LAST_INSERT_ID(), now()); " +
-                          "SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Telephone,Email,Details,Contact," +
-                          "Created,Expires,count(DeviceId) AS Count " +
-                          "FROM devices d INNER JOIN beacons b " +
-                          "ON b.BeaconId=d.BeaconId " +
-                          "WHERE b.BeaconId=LAST_INSERT_ID() " +
-                          "GROUP BY b.BeaconId LIMIT 1;",
-                          (LatE6, LonE6, course, Details, Telephone, Email, expiresStr, DeviceId))
+    debuglog("trying to CALL")
+    nInsert1 = cur.execute("CALL addBeacon(%s,%s,%s,%s,%s,%s,%s,%s,@BeaconId);",
+                          (str(LatE6),str(LonE6), course, Details, Telephone, Email, expiresStr, str(DeviceId)))
+
+    debuglog("nInsert1 is %d" % (nInsert1))
     
-    # Fast forward past the two insert statements
-    cur.nextset()
+    # Fast forward past the empty result set
     cur.nextset()
 
+    debuglog("fast forwarded")
+
+    nInsert2 = cur.execute("""
+SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,Details,Telephone,Email,Created,Expires,count(DeviceId) AS Count
+FROM devices d INNER JOIN beacons b
+ON b.BeaconId=d.BeaconId
+WHERE b.BeaconId=@BeaconId
+GROUP BY b.BeaconId LIMIT 1;
+""")
+
+    debuglog("nInsert2 is %d" % (nInsert2))
+
     createdRow = cur.fetchone()
+
+    debuglog("got createdRow")
 
     # Success??
     print "Content-Type: application/json"
@@ -177,9 +197,13 @@ except mdb.Error, e:
     print "Status: 502 Bad Gateway"
     print
     print "Error %d: %s" % (e.args[0],e.args[1])
-    sys.exit(1)
+    
+    debuglog("Error %d: %s" % (e.args[0],e.args[1]))
+
 
 finally:
 
+    if f:
+        f.close()
     if con:
         con.close()
