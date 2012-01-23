@@ -12,10 +12,13 @@ import sys
 import sqlGlobals as g
 import JSONDateTimeEncoder as jsondte
 
-#f= open("./debugLog","a")
+f = None
+#f = open("./debugLog","a")
+
 
 def debuglog(message):
 #    f.write("%s %s\n" % (datetime.datetime.now().isoformat(), message) )
+    f
 
 con = None
 
