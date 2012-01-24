@@ -4,17 +4,18 @@
 import MySQLdb as mdb
 import cgi
 # DEBUG No need to import cgitb when done debugging
-import cgitb
+#import cgitb
 import json as j
 import sys
 
 import sqlGlobals as g
+import sqlPassword as p
 import JSONDateTimeEncoder as jsondte
 
 con = None
 
 # DEBUG Turn this off when done debugging
-cgitb.enable(display=0, logdir=".")
+#cgitb.enable(display=0, logdir=".")
 
 # Get the passed CGI parameters
 params = cgi.FieldStorage()
@@ -65,7 +66,7 @@ queryPrep = ("SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,Details,Telephone
 # Put this in a try block because connecting to the server might fail
 try:
 
-    con = mdb.connect(g.server, g.username, g.password, g.dbname);
+    con = mdb.connect(g.server, g.username, p.password, g.dbname);
 
     cur = con.cursor(cursorclass=mdb.cursors.DictCursor)
 

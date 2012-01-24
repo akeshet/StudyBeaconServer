@@ -5,11 +5,12 @@ import MySQLdb as mdb
 import datetime
 import cgi
 # DEBUG No need to import cgitb when done debugging
-import cgitb
+#import cgitb
 import json as j
 import sys
 
 import sqlGlobals as g
+import sqlPassword as p
 import JSONDateTimeEncoder as jsondte
 
 f = None
@@ -23,7 +24,7 @@ def debuglog(message):
 con = None
 
 # DEBUG Turn this off when done debugging
-cgitb.enable(display=0, logdir=".")
+#cgitb.enable(display=0, logdir=".")
 
 # The 400 error code
 STATUS_400_STR = "Status: 400 Bad Request"
@@ -142,7 +143,7 @@ expiresStr = expires.strftime(SQL_DATE_FMT_STR)
 # Ok, try connecting to the server
 
 try:
-    con = mdb.connect(g.server, g.username, g.password, g.dbname);
+    con = mdb.connect(g.server, g.username, p.password, g.dbname);
     cur = con.cursor(cursorclass=mdb.cursors.DictCursor)
 
     # Check if this DeviceId is already at an existing beacon
