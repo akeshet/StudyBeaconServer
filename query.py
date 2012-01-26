@@ -58,8 +58,8 @@ LonE6Max = valOr0(LON_MAX_STR)
 LatLonString = "LatE6 > %s AND LatE6 < %s AND LonE6 > %s AND LonE6 < %s"
 
 # Here is the prepared query
-queryPrep = ("SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,WorkingOn,Details,Telephone,Email,Created,Expires,count(DeviceId)" 
-             + " AS Count FROM devices d INNER JOIN beacons b ON b.BeaconId=d.BeaconId "
+queryPrep = ("SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,WorkingOn,Details,Telephone,Email,Created,Expires,count(DeviceId)"
+             + " AS Count FROM devices d RIGHT JOIN beacons b ON b.BeaconId=d.BeaconId "
              + "WHERE (%s) AND (%s) AND (Expires>now()) GROUP BY b.BeaconId;" % (coursesOrString, LatLonString))
 
 

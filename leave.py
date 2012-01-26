@@ -54,7 +54,7 @@ def longCheck(key, base=10):
         debuglog("%s not an integer" % (key))
         sys.exit(1)
 
-# Get the Lat, Lon, and DeviceId
+
 BeaconId = longCheck(BEAC_ID_STR)
 DeviceId = longCheck( DEV_ID_STR, base=16)
 
