@@ -108,7 +108,7 @@ UPDATE BeaconId=%s, Joined=now()
     debuglog("fast forwarded")
 
     nInsert2 = cur.execute("""
-SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,Details,Telephone,Email,Created,Expires,count(DeviceId) AS Count
+SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,Details,WorkingOn,Telephone,Email,Created,Expires,count(DeviceId) AS Count
 FROM devices d INNER JOIN beacons b
 ON b.BeaconId=d.BeaconId
 WHERE b.BeaconId=%s

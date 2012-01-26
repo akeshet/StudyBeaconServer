@@ -116,6 +116,14 @@ else:
     DETAILS_DEFAULT = ""
     Details = DETAILS_DEFAULT
 
+# PARAM WorkingOn
+WORKINGON_STR = 'WorkingOn'
+if WORKINGON_STR in params:
+    WorkingOn = params.getvalue(WORKINGON_STR)
+else:
+    WORKINGON_DEFAULT = ""
+    WorkingOn = WORKINGON_DEFAULT
+
 # PARAM Telephone
 TELEPHONE_STR = 'Telephone'
 if TELEPHONE_STR in params:
@@ -165,8 +173,8 @@ try:
     # Ok, can proceed.
     # Can this fail??
     debuglog("trying to CALL")
-    nInsert1 = cur.execute("CALL addBeacon(%s,%s,%s,%s,%s,%s,%s,%s,@BeaconId);",
-                          (str(LatE6),str(LonE6), course, Details, Telephone, Email, expiresStr, str(DeviceId)))
+    nInsert1 = cur.execute("CALL addBeacon(%s,%s,%s,%s,%s,%s,%s,%s,%s,@BeaconId);",
+                          (str(LatE6),str(LonE6), course, WorkingOn, Details, Telephone, Email, expiresStr, str(DeviceId)))
 
     debuglog("nInsert1 is %d" % (nInsert1))
     
@@ -176,7 +184,7 @@ try:
     debuglog("fast forwarded")
 
     nInsert2 = cur.execute("""
-SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,Details,Telephone,Email,Created,Expires,count(DeviceId) AS Count
+SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,WorkingOn,Details,Telephone,Email,Created,Expires,count(DeviceId) AS Count
 FROM devices d INNER JOIN beacons b
 ON b.BeaconId=d.BeaconId
 WHERE b.BeaconId=@BeaconId
