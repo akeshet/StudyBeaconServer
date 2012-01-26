@@ -60,7 +60,7 @@ LatLonString = "LatE6 > %s AND LatE6 < %s AND LonE6 > %s AND LonE6 < %s"
 # Here is the prepared query
 queryPrep = ("SELECT b.BeaconId AS BeaconId,LatE6,LonE6,Course,Details,Telephone,Email,Created,Expires,count(DeviceId)" 
              + " AS Count FROM devices d INNER JOIN beacons b ON b.BeaconId=d.BeaconId "
-             + "WHERE (%s) AND (%s) GROUP BY b.BeaconId;" % (coursesOrString, LatLonString))
+             + "WHERE (%s) AND (%s) AND (Expires>now()) GROUP BY b.BeaconId;" % (coursesOrString, LatLonString))
 
 
 # Put this in a try block because connecting to the server might fail
