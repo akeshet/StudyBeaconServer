@@ -73,27 +73,27 @@ LonE6Max = +180000000L
 # Ok, get the parameters
 LAT_STR = "LatE6"
 LON_STR = "LonE6"
-if LAT_STR in params:
-    LatE6 = longCheck(LAT_STR)
-    if (LatE6 < LatE6Min or LatE6 > LatE6Max):
-        print STATUS_400_STR
-        print 
-        print "Latitude out of bounds"
-        debuglog("Lat bounds")
-        sys.exit(1)
-    queryParams = queryParams + (LatE6,)
-    queryFields = queryFields + (LAT_STR,)
+# if LAT_STR in params:
+#     LatE6 = longCheck(LAT_STR)
+#     if (LatE6 < LatE6Min or LatE6 > LatE6Max):
+#         print STATUS_400_STR
+#         print 
+#         print "Latitude out of bounds"
+#         debuglog("Lat bounds")
+#         sys.exit(1)
+#     queryParams = queryParams + (LatE6,)
+#     queryFields = queryFields + (LAT_STR,)
 
-if LON_STR in params:
-    LonE6 = longCheck(LON_STR)
-    if (LonE6 < LonE6Min or LonE6 > LonE6Max):
-        print STATUS_400_STR
-        print 
-        print "Longitude out of bounds"
-        debuglog("Lon bounds")
-        sys.exit(1)
-    queryParams = queryParams + (LonE6,)
-    queryFields = queryFields + (LON_STR,)
+# if LON_STR in params:
+#     LonE6 = longCheck(LON_STR)
+#     if (LonE6 < LonE6Min or LonE6 > LonE6Max):
+#         print STATUS_400_STR
+#         print 
+#         print "Longitude out of bounds"
+#         debuglog("Lon bounds")
+#         sys.exit(1)
+#     queryParams = queryParams + (LonE6,)
+#     queryFields = queryFields + (LON_STR,)
 
 # PARAM: duration (integer number of minutes)
 DURATION_STR = 'Duration'
