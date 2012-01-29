@@ -24,7 +24,7 @@ def debuglog(message):
 con = None
 
 # DEBUG Turn this off when done debugging
-cgitb.enable(display=0, logdir=".")
+#cgitb.enable(display=0, logdir=".")
 
 # The 400 error code
 STATUS_400_STR = "Status: 400 Bad Request"
@@ -108,6 +108,7 @@ if DURATION_STR in params:
         print DURATION_STR + "must be positive and less than %s" % (DURATION_MAX)
         debuglog("Bad duration")
         sys.exit(1)
+    debuglog("duration %d in params" % duration)
     now = datetime.datetime.now()
     # Expires
     delta = datetime.timedelta(minutes=duration)
@@ -122,6 +123,9 @@ def addIfIn(paramName):
     global queryParams, queryFields
     if paramName in params:
         paramValue = params.getvalue(paramName)
+        if (paramValue.isspace()):
+            paramValue = ""
+        debuglog("%s = %s" % (paramName,paramValue))
         queryParams = queryParams + (paramValue,)
         queryFields = queryFields + (paramName,)
 
